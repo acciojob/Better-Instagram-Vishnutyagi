@@ -1,34 +1,41 @@
-const draggables = document.querySelectorAll('.draggable');
+// Initialize variables
+let dragged;
 
-draggables.forEach(draggable => {
-    draggable.addEventListener('dragstart', dragStart);
-    draggable.addEventListener('dragover', dragOver);
-    draggable.addEventListener('drop', drop);
+// Add event listeners for drag and drop
+document.addEventListener("dragstart", function(event) {
+    dragged = event.target;
+    event.target.style.opacity = 0.5; // Make the dragged item semi-transparent
 });
 
-let draggedElement = null;
+document.addEventListener("dragend", function(event) {
+    event.target.style.opacity = ""; // Reset opacity when drag ends
+});
 
-function dragStart(event) {
-    draggedElement = event.target;
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/html', event.target.innerHTML);
-}
+document.addEventListener("dragover", function(event) {
+    event.preventDefault(); // Allow drop events
+});
 
-function dragOver(event) {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-}
-
-function drop(event) {
-    event.preventDefault();
-
-    if (event.target.classList.contains('draggable')) {
-        let temp = draggedElement.innerHTML;
-        draggedElement.innerHTML = event.target.innerHTML;
-        event.target.innerHTML = temp;
-
-        let tempId = draggedElement.id;
-        draggedElement.id = event.target.id;
-        event.target.id = tempId;
+document.addEventListener("dragenter", function(event) {
+    // Highlight potential drop target when the draggable element enters it
+    if (event.target.classList.contains("draggable")) {
+        event.target.style.background = "lightgray";
     }
-}
+});
+
+document.addEventListener("dragleave", function(event) {
+    // Remove highlight when the draggable element leaves a drop target
+    if (event.target.classList.contains("draggable")) {
+        event.target.style.background = "";
+    }
+});
+
+document.addEventListener("drop", function(event) {
+    event.preventDefault();
+    // Swap the dragged element with the drop target
+    if (event.target.classList.contains("draggable")) {
+        // Swap backgrounds
+        let temp = dragged.style.backgroundImage;
+        dragged.style.backgroundImage = event.target.style.backgroundImage;
+        event.target.style.backgroundImage = temp;
+    }
+});
